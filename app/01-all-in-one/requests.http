@@ -1,0 +1,28 @@
+@server = http://localhost:3000
+
+@eventName = door-open
+
+###
+
+// List all subscriptions
+GET {{server}}/subscriptions
+
+###
+
+// Create new event subscription
+POST {{server}}/subscriptions
+Content-Type: application/json
+
+{
+  "event_name": "{{eventName}}"
+}
+
+###
+
+// Trigger an event
+POST {{server}}/trigger
+Content-Type: application/json
+
+{
+  "event_name": "{{eventName}}"
+}

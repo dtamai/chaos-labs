@@ -1,0 +1,60 @@
+@proxy = http://localhost:8474
+@emailProxy = email
+
+###
+
+// Populate proxies
+POST {{proxy}}/populate
+Content-Type: application/json
+
+[
+    {
+        "name": "{{emailProxy}}",
+        "upstream": "mailhog:1035",
+        "listen": "[::]:1025",
+        "enabled": true
+    }
+]
+
+###
+
+// Add proxy timeout
+@timeoutProxy = {{emailProxy}}
+@timeoutToxic = {{timeoutProxy}}-timeout
+POST {{proxy}}/proxies/{{timeoutProxy}}/toxics
+Content-Type: application/json
+
+{
+    "name": "{{timeoutToxic}}",
+    "type": "timeout",
+    "toxicity": 0.5,
+    "attributes": {
+        "timeout": 1000
+    }
+}
+
+###
+
+// Add proxy delay
+@delayProxy = {{emailProxy}}
+@delayToxic = {{delayProxy}}-latency
+POST {{proxy}}/proxies/{{delayProxy}}/toxics
+Content-Type: application/json
+
+{
+    "name": "{{delayToxic}}",
+    "type": "latency",
+    "toxicity": 0.5,
+    "stream": "downstream",
+    "attributes": {
+        "latency": 1000,
+        "jitter": 100
+    }
+}
+
+###
+
+// Remove toxic
+@deleteProxy = {{timeoutProxy}}
+@deleteToxic = {{timeoutToxic}}
+DELETE {{proxy}}/proxies/{{deleteProxy}}/toxics/{{deleteToxic}}

@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  app:
+    image: 'chaos-labs-app'
+    ports:
+    - '3000:3000'
+
+  mailhog:
+    image: 'mailhog/mailhog'
+    environment:
+    - 'MH_SMTP_BIND_ADDR=0.0.0.0:1035'
+    ports:
+    - '8025:8025'
+
+  toxiproxy:
+    image: 'shopify/toxiproxy'
+    command:
+    - '-host=0.0.0.0'
+      # - '-config=/config/toxiproxy.json'
+    # volumes:
+      # - './config:/config'
+    ports:
+    - '8474:8474'
+    - '1025:1025'
+
+  prometheus:
+    image: 'prom/prometheus:latest'
+    volumes:
+    - './config/prometheus:/etc/prometheus'
+    ports:
+    - '9090:9090'
+
+  grafana:
+    image: 'grafana/grafana'
+    ports:
+    - '4000:3000'
